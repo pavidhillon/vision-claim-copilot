@@ -35,6 +35,10 @@ const CSS = `
 .vc .eyebrow { font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:.2em;
   text-transform:uppercase; color:var(--lens); font-weight:500; }
 .vc .sub { font-size:16px; line-height:1.55; color:var(--slate); margin:14px 0 0; max-width:44ch; }
+.vc .stats { display:flex; gap:22px; margin-top:26px; flex-wrap:wrap; }
+.vc .stat { text-align:center; min-width:0; }
+.vc .stat-n { font-size:21px; font-weight:600; letter-spacing:-.02em; line-height:1.2; }
+.vc .stat-l { margin-top:4px; }
 .vc .mono { font-family:'IBM Plex Mono',monospace; font-variant-numeric:tabular-nums; }
 .vc .k { font-size:12.5px; color:var(--mute); }
 .vc .v { font-size:14px; font-weight:600; }
@@ -71,6 +75,19 @@ const CSS = `
   .vc .grid, .vc .hero { grid-template-columns:minmax(0,1fr); gap:22px; }
   .vc .page { padding:20px 0 40px; }
 }
+@media (max-width:640px){
+  .vc .hero-copy { text-align:center; }
+  .vc .hero-copy .sub { margin-left:auto; margin-right:auto; }
+  .vc .stats { display:grid; grid-template-columns:repeat(3,1fr); gap:16px 10px; width:100%; margin-top:22px; }
+  .vc .stat-n { font-size:19px; }
+  .vc .drop { padding:22px 16px 18px; border-radius:18px; }
+  .vc .btn { padding:15px 16px; min-height:48px; }
+  .vc .payout .big { font-size:38px; }
+  .vc .card { padding:16px; }
+  .vc .chip { padding:10px 14px; min-height:44px; }
+  .vc .field-edit input { max-width:none; }
+  .vc .field-val { flex-wrap:wrap; }
+}
 .vc .side { position:sticky; top:86px; }
 @media (max-width:900px){ .vc .side { position:static; } }
 
@@ -78,6 +95,17 @@ const CSS = `
 .vc .card { background:var(--card); border:1px solid var(--line); border-radius:var(--r); padding:18px; }
 .vc .card + .card { margin-top:14px; }
 .vc .row { display:flex; justify-content:space-between; gap:12px; align-items:baseline; }
+.vc .field { align-items:center; padding:8px 0; }
+.vc .field-val { display:flex; align-items:center; gap:6px; justify-content:flex-end; text-align:right; flex:1; min-width:0; }
+.vc .field-edit { display:flex; gap:6px; align-items:center; flex:1; min-width:0; justify-content:flex-end; }
+.vc .field-edit input { flex:1; min-width:0; max-width:240px; border:1px solid var(--line); border-radius:8px;
+  padding:7px 10px; font-family:inherit; font-size:14px; font-weight:600; color:var(--ink); background:#fff; }
+.vc .field-edit input:focus { outline:2px solid var(--agent); outline-offset:1px; }
+.vc .field-save { border:0; background:var(--ink); color:#fff; border-radius:8px; padding:7px 11px;
+  font-family:inherit; font-size:12px; font-weight:600; cursor:pointer; white-space:nowrap; flex-shrink:0; }
+.vc .editbtn { border:0; background:transparent; color:var(--mute); cursor:pointer; padding:5px;
+  border-radius:7px; display:grid; place-items:center; flex-shrink:0; line-height:0; }
+.vc .editbtn:hover { color:var(--agent); background:var(--agent-soft); }
 .vc .cardhead { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
 
 /* ---------- drop zone ---------- */
@@ -99,7 +127,8 @@ const CSS = `
 .vc .btn.primary { background:var(--ink); color:#fff; width:100%; }
 .vc .btn.go { background:var(--lens); color:#fff; width:100%; font-size:16px; font-weight:700; padding:16px; }
 .vc .btn.go[disabled] { background:#C4CFCD; cursor:not-allowed; }
-.vc .btn.line { background:#fff; border:1px solid var(--line); color:var(--ink); width:100%; margin-top:10px; }
+.vc .btn.line { background:#fff; border:1px solid var(--line); color:var(--ink); width:100%; margin-top:10px; text-align:center; }
+.vc .btn.sample { justify-content:center; }
 .vc .btn:active { transform:translateY(1px); }
 .vc .linkbtn { background:none; border:0; font-family:'IBM Plex Mono',monospace; font-size:11px;
   letter-spacing:.09em; text-transform:uppercase; color:var(--agent); cursor:pointer; padding:14px 0 0; width:100%; }
@@ -222,6 +251,16 @@ const ALLOW = [
 ];
 const PAYOUT = ALLOW.reduce((s, a) => s + a.a, 0);
 
+const DEFAULT_CLAIM = {
+  provider: "Bayview Eye Care · NPI 1487203355",
+  dateOfService: "July 24, 2026",
+  patient: "",
+  visitType: "",
+  payment: "",
+};
+
+const CLAIM_FIELD = { patient: "patient", reason: "visitType", paid: "payment" };
+
 const PIPELINE = [
   { t: "Reading the image", s: "OCR · 1,412 characters" },
   { t: "Identifying the provider", s: "Matched NPI 1487203355" },
@@ -266,6 +305,14 @@ const QUESTIONS = [
 const money = (n) =>
   n.toLocaleString("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 2 });
 
+function PencilIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+      <path d="M12 20h9" /><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
+    </svg>
+  );
+}
+
 function ReceiptPaper() {
   return (
     <div className="receipt">
@@ -306,6 +353,7 @@ export default function VisionClaimCopilot() {
   const [draft, setDraft] = useState("");
   const [drag, setDrag] = useState(false);
   const [elapsed, setElapsed] = useState(null);
+  const [claimDetails, setClaimDetails] = useState(DEFAULT_CLAIM);
   const startedAt = useRef(null);
   const fileRef = useRef(null);
   const endRef = useRef(null);
@@ -363,6 +411,9 @@ export default function VisionClaimCopilot() {
     const q = QUESTIONS[qi];
     setThread((t) => [...t, { r: "me", text: val }]);
     setAnswers((a) => ({ ...a, [q.id]: val }));
+    if (CLAIM_FIELD[q.id]) {
+      setClaimDetails((d) => ({ ...d, [CLAIM_FIELD[q.id]]: val }));
+    }
     setDraft("");
     setTyping(true);
     setTimeout(() => {
@@ -388,9 +439,11 @@ export default function VisionClaimCopilot() {
 
   const reset = () => {
     setScreen("home"); setPhoto(null); setStep(0); setQi(0);
-    setThread([]); setAnswers({}); setElapsed(null);
+    setThread([]); setAnswers({}); setElapsed(null); setClaimDetails(DEFAULT_CLAIM);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
+
+  const updateClaimDetail = (key, val) => setClaimDetails((d) => ({ ...d, [key]: val }));
 
   const idx = { home: 0, scan: 0, review: 1, sent: 2 }[screen];
   const q = QUESTIONS[qi];
@@ -434,7 +487,8 @@ export default function VisionClaimCopilot() {
         {screen === "scan" && <Scan photo={photo} step={step} onSkip={startReview} />}
         {screen === "review" && (
           <Review
-            answers={answers} done={done} thread={thread} typing={typing} q={q} qi={qi}
+            claimDetails={claimDetails} onUpdateClaimDetail={updateClaimDetail}
+            done={done} thread={thread} typing={typing} q={q} qi={qi}
             onAnswer={answer} draft={draft} setDraft={setDraft} endRef={endRef} onSubmit={submit}
           />
         )}
@@ -453,7 +507,7 @@ function Home({ drag, setDrag, onSample, onBrowse, onPicked, fileRef }) {
   return (
     <>
       <section className="hero">
-        <div>
+        <div className="hero-copy">
           <span className="eyebrow">Out-of-network claim</span>
           <h1 style={{ marginTop: 12 }}>
             Don't fill out
@@ -464,12 +518,12 @@ function Home({ drag, setDrag, onSample, onBrowse, onPicked, fileRef }) {
             Drop in the receipt from your visit. I'll read it, pull out everything your plan needs,
             ask about anything I can't make out, and file the claim for you.
           </p>
-          <div style={{ display: "flex", gap: 22, marginTop: 26, flexWrap: "wrap" }}>
+          <div className="stats">
             {[["~50s", "average to file"], ["0", "fields to type"], ["5–7 days", "to reimbursement"]].map(
               ([n, l]) => (
-                <div key={l}>
-                  <div className="mono" style={{ fontSize: 21, fontWeight: 600, letterSpacing: "-.02em" }}>{n}</div>
-                  <div className="k">{l}</div>
+                <div className="stat" key={l}>
+                  <div className="mono stat-n">{n}</div>
+                  <div className="k stat-l">{l}</div>
                 </div>
               )
             )}
@@ -506,7 +560,7 @@ function Home({ drag, setDrag, onSample, onBrowse, onPicked, fileRef }) {
             </svg>
             Take a photo or choose a file
           </button>
-          <button className="btn line" onClick={onSample}>Use the sample receipt</button>
+          <button className="btn line sample" onClick={onSample}>Use the sample receipt</button>
           <button className="linkbtn" onClick={onSample}>▸ Skip to the demo</button>
         </div>
       </section>
@@ -581,24 +635,26 @@ function Scan({ photo, step, onSkip }) {
   );
 }
 
-function Review({ answers, done, thread, typing, q, qi, onAnswer, draft, setDraft, endRef, onSubmit }) {
+function Review({ claimDetails, onUpdateClaimDetail, done, thread, typing, q, qi, onAnswer, draft, setDraft, endRef, onSubmit }) {
+  const providerName = claimDetails.provider.split(" · ")[0] || claimDetails.provider;
+
   return (
     <div className="grid">
       <div>
         <span className="eyebrow">Draft claim · VC-4907</span>
-        <h2 style={{ margin: "8px 0 4px", fontSize: 26 }}>Bayview Eye Care</h2>
-        <p className="k">July 24, 2026 · San Jose, CA · out-of-network</p>
+        <h2 style={{ margin: "8px 0 4px", fontSize: 26 }}>{providerName}</h2>
+        <p className="k">{claimDetails.dateOfService} · San Jose, CA · out-of-network</p>
 
         <div className="card" style={{ marginTop: 16 }}>
           <div className="cardhead">
             <h3>Claim details</h3>
             <span className="pill ok">read from receipt</span>
           </div>
-          <Field label="Provider" value="Bayview Eye Care · NPI 1487203355" />
-          <Field label="Date of service" value="July 24, 2026" />
-          <Field label="Patient" value={answers.patient} pending="Who was seen?" />
-          <Field label="Visit type" value={answers.reason} pending="Routine or medical?" />
-          <Field label="Payment" value={answers.paid} pending="Who paid?" />
+          <Field label="Provider" value={claimDetails.provider} onChange={(v) => onUpdateClaimDetail("provider", v)} />
+          <Field label="Date of service" value={claimDetails.dateOfService} onChange={(v) => onUpdateClaimDetail("dateOfService", v)} />
+          <Field label="Patient" value={claimDetails.patient} pending="Who was seen?" onChange={(v) => onUpdateClaimDetail("patient", v)} />
+          <Field label="Visit type" value={claimDetails.visitType} pending="Routine or medical?" onChange={(v) => onUpdateClaimDetail("visitType", v)} />
+          <Field label="Payment" value={claimDetails.payment} pending="Who paid?" onChange={(v) => onUpdateClaimDetail("payment", v)} />
         </div>
 
         <div className="card">
@@ -685,11 +741,55 @@ function Review({ answers, done, thread, typing, q, qi, onAnswer, draft, setDraf
   );
 }
 
-function Field({ label, value, pending }) {
+function Field({ label, value, pending, onChange }) {
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState("");
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    if (editing) inputRef.current?.focus();
+  }, [editing]);
+
+  const startEdit = () => {
+    setDraft(value || "");
+    setEditing(true);
+  };
+
+  const save = () => {
+    const next = draft.trim();
+    if (next) onChange(next);
+    setEditing(false);
+  };
+
+  const cancel = () => setEditing(false);
+
   return (
-    <div className="row" style={{ padding: "8px 0" }}>
+    <div className="row field">
       <span className="k">{label}</span>
-      {value ? <span className="v resolve">{value}</span> : <span className="pill need">{pending}</span>}
+      <div className="field-val">
+        {editing ? (
+          <div className="field-edit">
+            <input
+              ref={inputRef}
+              value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") { e.preventDefault(); save(); }
+                if (e.key === "Escape") cancel();
+              }}
+              aria-label={`Edit ${label}`}
+            />
+            <button type="button" className="field-save" onClick={save}>Save</button>
+          </div>
+        ) : (
+          <>
+            {value ? <span className="v resolve">{value}</span> : pending ? <span className="pill need">{pending}</span> : null}
+            <button type="button" className="editbtn" onClick={startEdit} aria-label={`Edit ${label}`}>
+              <PencilIcon />
+            </button>
+          </>
+        )}
+      </div>
     </div>
   );
 }
