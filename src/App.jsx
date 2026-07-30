@@ -496,7 +496,7 @@ function Home({ drag, setDrag, onSample, onBrowse, onPicked, fileRef }) {
             </div>
           </div>
           <input
-            ref={fileRef} type="file" accept="image/*,application/pdf" capture="environment"
+            ref={fileRef} type="file" accept="image/*,application/pdf"
             style={{ display: "none" }}
             onChange={(e) => e.target.files?.[0] && onPicked(e.target.files[0])}
           />
