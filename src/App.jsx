@@ -469,11 +469,11 @@ function Home({ onSample }) {
     <>
       <section className="hero">
         <div className="hero-intro">
-          <span className="eyebrow">Out-of-network claim</span>
+          <span className="eyebrow">Submit Out-of-network Claims</span>
           <h1 style={{ marginTop: 12 }}>
-            Drop your receipt.
+            Skip the forms.
             <br />
-            I'll file the claim.
+            Start the conversation.
           </h1>
           <p className="sub">
             Upload a photo of your receipt below. The copilot reads it, asks about anything
