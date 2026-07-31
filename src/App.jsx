@@ -6,7 +6,11 @@ import { useState, useRef, useEffect, useCallback } from "react";
    Wire to Spring Boot by replacing the two spots marked "API HOOK".
 -------------------------------------------------------------------*/
 
-const API_BASE = ""; // e.g. "http://localhost:8080/api"
+const API_BASE = import.meta.env.VITE_API_BASE ?? "/api";
+
+const UIPATH_AGENT_URL =
+  import.meta.env.VITE_UIPATH_AGENT_URL ??
+  "https://cloud.uipath.com/uipathlabstraining/VSP_Hackathon_Intro_Lab_20260629/autopilotforeveryone_/conversational-agents/?agentId=138436&mode=embedded";
 
 const CSS = `
 @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
@@ -195,6 +199,12 @@ const CSS = `
 .vc .composer button { border:0; background:var(--ink); color:#fff; border-radius:11px; padding:0 16px;
   font-family:inherit; font-weight:600; cursor:pointer; }
 
+/* ---------- UiPath agent embed ---------- */
+.vc .agent-panel { min-height:560px; }
+.vc .agent-frame { flex:1; min-height:520px; background:#fff; }
+.vc .agent-frame iframe { width:100%; height:100%; min-height:520px; border:0; display:block; }
+@media (max-width:900px){ .vc .agent-frame, .vc .agent-frame iframe { min-height:480px; } }
+
 /* ---------- money ---------- */
 .vc .line { display:flex; justify-content:space-between; gap:12px; padding:11px 0; border-bottom:1px solid #EDF1F0; font-size:14px; }
 .vc .line:last-child { border-bottom:0; }
@@ -346,19 +356,11 @@ export default function VisionClaimCopilot() {
   const [screen, setScreen] = useState("home");
   const [photo, setPhoto] = useState(null);
   const [step, setStep] = useState(0);
-  const [answers, setAnswers] = useState({});
-  const [thread, setThread] = useState([]);
-  const [qi, setQi] = useState(0);
-  const [typing, setTyping] = useState(false);
-  const [draft, setDraft] = useState("");
   const [drag, setDrag] = useState(false);
   const [elapsed, setElapsed] = useState(null);
   const [claimDetails, setClaimDetails] = useState(DEFAULT_CLAIM);
   const startedAt = useRef(null);
   const fileRef = useRef(null);
-  const endRef = useRef(null);
-
-  const done = qi >= QUESTIONS.length;
 
   const go = useCallback(() => {
     startedAt.current = Date.now();
@@ -391,11 +393,6 @@ export default function VisionClaimCopilot() {
   const startReview = useCallback(() => {
     setScreen("review");
     window.scrollTo({ top: 0, behavior: "smooth" });
-    setThread([
-      { r: "bot", text: "I read the whole receipt. Bayview Eye Care, July 24, $618 across four items — the claim is built." },
-      { r: "note", text: "Heads up: the $18 lens cleaning kit isn't a covered item, so I left it off. Claiming it would have sent the whole submission back." },
-      { r: "bot", text: "Three quick things and you're done." },
-    ]);
   }, []);
 
   useEffect(() => {
@@ -405,48 +402,22 @@ export default function VisionClaimCopilot() {
     }
   }, [step, screen, startReview]);
 
-  useEffect(() => { endRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" }); }, [thread, typing]);
-
-  const answer = (val) => {
-    const q = QUESTIONS[qi];
-    setThread((t) => [...t, { r: "me", text: val }]);
-    setAnswers((a) => ({ ...a, [q.id]: val }));
-    if (CLAIM_FIELD[q.id]) {
-      setClaimDetails((d) => ({ ...d, [CLAIM_FIELD[q.id]]: val }));
-    }
-    setDraft("");
-    setTyping(true);
-    setTimeout(() => {
-      setTyping(false);
-      const next = qi + 1;
-      setThread((t) => [
-        ...t,
-        { r: "bot", text: q.ack(val) },
-        next >= QUESTIONS.length
-          ? { r: "bot", text: `Your claim is complete and error-checked. Estimated reimbursement is ${money(PAYOUT)}. Send it whenever you're ready.` }
-          : null,
-      ].filter(Boolean));
-      setQi(next);
-    }, 800);
-  };
-
   const submit = () => {
-    // API HOOK — POST `${API_BASE}/claims` with { lines: LINES, answers, memberId: MEMBER.id }
+    // API HOOK — POST `${API_BASE}/claims` with { lines: LINES, claimDetails, memberId: MEMBER.id }
     setElapsed(Math.max(12, Math.round((Date.now() - (startedAt.current || Date.now())) / 1000)));
     setScreen("sent");
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const reset = () => {
-    setScreen("home"); setPhoto(null); setStep(0); setQi(0);
-    setThread([]); setAnswers({}); setElapsed(null); setClaimDetails(DEFAULT_CLAIM);
+    setScreen("home"); setPhoto(null); setStep(0);
+    setElapsed(null); setClaimDetails(DEFAULT_CLAIM);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const updateClaimDetail = (key, val) => setClaimDetails((d) => ({ ...d, [key]: val }));
 
   const idx = { home: 0, scan: 0, review: 1, sent: 2 }[screen];
-  const q = QUESTIONS[qi];
 
   return (
     <div className="vc">
@@ -487,9 +458,9 @@ export default function VisionClaimCopilot() {
         {screen === "scan" && <Scan photo={photo} step={step} onSkip={startReview} />}
         {screen === "review" && (
           <Review
-            claimDetails={claimDetails} onUpdateClaimDetail={updateClaimDetail}
-            done={done} thread={thread} typing={typing} q={q} qi={qi}
-            onAnswer={answer} draft={draft} setDraft={setDraft} endRef={endRef} onSubmit={submit}
+            claimDetails={claimDetails}
+            onUpdateClaimDetail={updateClaimDetail}
+            onSubmit={submit}
           />
         )}
         {screen === "sent" && <Sent onNew={reset} elapsed={elapsed} />}
@@ -635,7 +606,25 @@ function Scan({ photo, step, onSkip }) {
   );
 }
 
-function Review({ claimDetails, onUpdateClaimDetail, done, thread, typing, q, qi, onAnswer, draft, setDraft, endRef, onSubmit }) {
+function UiPathCopilot({ src }) {
+  return (
+    <div className="panel agent-panel">
+      <div className="ph">
+        <h3>Copilot</h3>
+        <span className="pill ai">UiPath agent</span>
+      </div>
+      <div className="agent-frame">
+        <iframe
+          src={src}
+          title="Vision Claim Copilot"
+          allow="clipboard-write"
+        />
+      </div>
+    </div>
+  );
+}
+
+function Review({ claimDetails, onUpdateClaimDetail, onSubmit }) {
   const providerName = claimDetails.provider.split(" · ")[0] || claimDetails.provider;
 
   return (
@@ -680,61 +669,28 @@ function Review({ claimDetails, onUpdateClaimDetail, done, thread, typing, q, qi
           </div>
         </div>
 
-        {done && (
-          <div className="payout resolve" style={{ marginTop: 14 }}>
-            <div className="k">Estimated reimbursement</div>
-            <div className="big">{money(PAYOUT)}</div>
-            <div style={{ marginTop: 16, display: "grid", gap: 7 }}>
-              {ALLOW.map((a) => (
-                <div className="row" key={a.d} style={{ fontSize: 13 }}>
-                  <span style={{ color: "#93A5A2" }}>{a.d} allowance</span>
-                  <span className="mono">{money(a.a)}</span>
-                </div>
-              ))}
-            </div>
-            <p className="save" style={{ marginTop: 16, lineHeight: 1.5 }}>
-              Paid by direct deposit, typically 5–7 days after approval.
-            </p>
+        <div className="payout resolve" style={{ marginTop: 14 }}>
+          <div className="k">Estimated reimbursement</div>
+          <div className="big">{money(PAYOUT)}</div>
+          <div style={{ marginTop: 16, display: "grid", gap: 7 }}>
+            {ALLOW.map((a) => (
+              <div className="row" key={a.d} style={{ fontSize: 13 }}>
+                <span style={{ color: "#93A5A2" }}>{a.d} allowance</span>
+                <span className="mono">{money(a.a)}</span>
+              </div>
+            ))}
           </div>
-        )}
+          <p className="save" style={{ marginTop: 16, lineHeight: 1.5 }}>
+            Paid by direct deposit, typically 5–7 days after approval.
+          </p>
+        </div>
       </div>
 
       <aside className="side">
-        <div className="panel">
-          <div className="ph">
-            <h3>Copilot</h3>
-            <span className={"pill " + (done ? "ok" : "need")}>
-              {done ? "all set" : `${QUESTIONS.length - qi} to go`}
-            </span>
-          </div>
-          <div className="thread">
-            {thread.map((m, i) => (
-              <div key={i} className={"msg " + (m.r === "me" ? "me" : m.r === "note" ? "note" : "bot")}>
-                {m.text}
-              </div>
-            ))}
-            {!done && !typing && q && <div className="msg bot">{q.q}</div>}
-            {typing && <div className="msg bot typing"><i /><i /><i /></div>}
-            <div ref={endRef} />
-          </div>
+        <UiPathCopilot src={UIPATH_AGENT_URL} />
 
-          {!done && !typing && q && (
-            <>
-              <div className="chips">
-                {q.chips.map((c) => (
-                  <button key={c.v} className="chip" onClick={() => onAnswer(c.v)}>{c.label}</button>
-                ))}
-              </div>
-              <form className="composer" onSubmit={(e) => { e.preventDefault(); if (draft.trim()) onAnswer(draft.trim()); }}>
-                <input value={draft} onChange={(e) => setDraft(e.target.value)} placeholder="or type an answer" aria-label="Type an answer" />
-                <button type="submit">Send</button>
-              </form>
-            </>
-          )}
-        </div>
-
-        <button className="btn go" style={{ marginTop: 14 }} disabled={!done} onClick={onSubmit}>
-          {done ? `Send claim · get ${money(PAYOUT)} back` : `${QUESTIONS.length - qi} answers left`}
+        <button className="btn go" style={{ marginTop: 14 }} onClick={onSubmit}>
+          {`Send claim · get ${money(PAYOUT)} back`}
         </button>
       </aside>
     </div>

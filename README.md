@@ -40,9 +40,17 @@ hunting through a component tree. Sections are commented.
 
 ## Connecting the backend
 
-Two places, both marked `API HOOK` in `src/App.jsx`.
+**Copilot chat (wired).** The review screen embeds the UiPath Conversational Agent:
 
-**1. Parse the receipt.** Replace the `setInterval` inside the pipeline effect:
+```
+https://cloud.uipath.com/uipathlabstraining/VSP_Hackathon_Intro_Lab_20260629/autopilotforeveryone_/conversational-agents/?agentId=138436&mode=embedded
+```
+
+Override with `VITE_UIPATH_AGENT_URL` in a `.env` file if the agent URL changes.
+
+Users need a UiPath account with access to the agent (or anonymous auth configured in UiPath Admin).
+
+Two more integration points in `src/App.jsx`, both marked `API HOOK`:
 
 ```js
 const form = new FormData();
@@ -61,7 +69,7 @@ builds itself — no UI changes needed.
 await fetch(`${API_BASE}/claims`, {
   method: "POST",
   headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ lines: LINES, answers, memberId: MEMBER.id }),
+  body: JSON.stringify({ lines: LINES, claimDetails, memberId: MEMBER.id }),
 });
 ```
 

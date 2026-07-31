@@ -6,5 +6,11 @@ export default defineConfig({
   server: {
     port: 5173,
     host: true, // lets you open it on your phone over the same wifi
+    proxy: {
+      "/api": {
+        target: "http://localhost:8080",
+        changeOrigin: true,
+      },
+    },
   },
 });
