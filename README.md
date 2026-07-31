@@ -1,7 +1,13 @@
 # Vision Claim Copilot
 
-Out-of-network vision claims without the form. Upload a receipt, an agent reads it,
-a copilot asks only about what it couldn't determine, and the claim is filed.
+Transforming vision claims from paperwork into a conversation.  
+
+Upload a receipt, let AI extract the details, answer only the missing questions through an intelligent copilot, and submit your claim — eliminating tedious claim forms and simplifying the entire reimbursement process.
+
+
+## View Live
+Deployed at https://vision-claim-copilot.vercel.app/    (UiPath Log In required)
+
 
 ## Run it
 
@@ -13,6 +19,7 @@ npm run dev
 ```
 
 Open http://localhost:5173
+
 
 `npm run dev` also prints a Network address — open that on your phone (same wifi)
 to demo the mobile layout and the camera capture.
