@@ -13,7 +13,7 @@ const UIPATH_AGENT_URL =
   "https://cloud.uipath.com/uipathlabstraining/VSP_Hackathon_Intro_Lab_20260629/autopilotforeveryone_/conversational-agents/?agentId=138436&mode=embedded";
 
 const CSS = `
-@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 .vc, .vc *, .vc *::before, .vc *::after { box-sizing:border-box; }
 .vc {
@@ -23,27 +23,28 @@ const CSS = `
   --agent:#4B45C6; --agent-soft:#EDECFB;
   --amber:#A96A0C; --amber-soft:#FBEEDA;
   --r:16px;
-  font-family:'IBM Plex Sans',ui-sans-serif,system-ui,sans-serif;
+  font-family:'Inter',ui-sans-serif,system-ui,sans-serif;
   color:var(--ink); background:var(--bg); min-height:100vh;
-  font-size:15px; line-height:1.45;
+  font-size:15px; line-height:1.5;
+  -webkit-font-smoothing:antialiased;
 }
 .vc .wrap { max-width:1120px; margin:0 auto; padding:0 24px; width:100%; }
 @media (max-width:640px){ .vc .wrap { padding:0 16px; } }
 
 /* ---------- type ---------- */
-.vc h1 { font-family:'Bricolage Grotesque',sans-serif; font-weight:800; font-size:clamp(32px,5vw,54px);
-  line-height:1.0; letter-spacing:-.035em; margin:0; }
-.vc h2 { font-family:'Bricolage Grotesque',sans-serif; font-weight:700; font-size:20px;
-  letter-spacing:-.02em; margin:0; }
-.vc h3 { font-size:14px; font-weight:700; margin:0; letter-spacing:-.01em; }
-.vc .eyebrow { font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:.2em;
+.vc h1 { font-family:'Inter',sans-serif; font-weight:800; font-size:clamp(28px,4.2vw,44px);
+  line-height:1.08; letter-spacing:-.025em; margin:0; }
+.vc h2 { font-family:'Inter',sans-serif; font-weight:700; font-size:20px;
+  letter-spacing:-.015em; margin:0; }
+.vc h3 { font-size:14px; font-weight:600; margin:0; letter-spacing:-.01em; }
+.vc .eyebrow { font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:.14em;
   text-transform:uppercase; color:var(--lens); font-weight:500; }
 .vc .sub { font-size:16px; line-height:1.55; color:var(--slate); margin:14px 0 0; max-width:44ch; }
 .vc .stats { display:flex; gap:22px; margin-top:26px; flex-wrap:wrap; }
 .vc .stat { text-align:center; min-width:0; }
 .vc .stat-n { font-size:21px; font-weight:600; letter-spacing:-.02em; line-height:1.2; }
 .vc .stat-l { margin-top:4px; }
-.vc .mono { font-family:'IBM Plex Mono',monospace; font-variant-numeric:tabular-nums; }
+.vc .mono { font-family:'JetBrains Mono',monospace; font-variant-numeric:tabular-nums; }
 .vc .k { font-size:12.5px; color:var(--mute); }
 .vc .v { font-size:14px; font-weight:600; }
 
@@ -56,7 +57,7 @@ const CSS = `
 .vc .stepper { display:flex; gap:20px; list-style:none; margin:0; padding:0; }
 .vc .stepper li { display:flex; align-items:center; gap:7px; font-size:12.5px; color:var(--mute); font-weight:500; }
 .vc .stepper .n { width:20px; height:20px; border-radius:50%; border:1.5px solid #CFD8D7;
-  display:grid; place-items:center; font-family:'IBM Plex Mono',monospace; font-size:10px; }
+  display:grid; place-items:center; font-family:'JetBrains Mono',monospace; font-size:10px; }
 .vc .stepper li.on { color:var(--ink); font-weight:600; }
 .vc .stepper li.on .n { background:var(--ink); border-color:var(--ink); color:#fff; }
 .vc .stepper li.past .n { background:var(--lens); border-color:var(--lens); color:#fff; }
@@ -74,23 +75,30 @@ const CSS = `
 /* ---------- layout ---------- */
 .vc .page { padding:34px 0 70px; }
 .vc .grid { display:grid; grid-template-columns:minmax(0,1fr) 396px; gap:26px; align-items:start; }
-.vc .hero { display:grid; grid-template-columns:1.02fr .98fr; gap:46px; align-items:center; padding:20px 0 8px; }
+.vc .hero { padding:8px 0 0; }
+.vc .hero-intro { max-width:640px; margin-bottom:28px; }
+.vc .hero-agent { margin-top:0; }
+.vc .hero-agent .agent-panel { min-height:min(72vh,680px); border-radius:20px; box-shadow:0 4px 24px rgba(16,24,32,.06); }
+.vc .hero-agent .agent-frame, .vc .hero-agent .agent-frame iframe { min-height:min(68vh,640px); }
 @media (max-width:900px){
-  .vc .grid, .vc .hero { grid-template-columns:minmax(0,1fr); gap:22px; }
+  .vc .grid { grid-template-columns:minmax(0,1fr); gap:22px; }
   .vc .page { padding:20px 0 40px; }
+  .vc .hero-agent .agent-panel { min-height:min(65vh,560px); }
+  .vc .hero-agent .agent-frame, .vc .hero-agent .agent-frame iframe { min-height:min(62vh,520px); }
 }
 @media (max-width:640px){
-  .vc .hero-copy { text-align:center; }
-  .vc .hero-copy .sub { margin-left:auto; margin-right:auto; }
+  .vc .hero-intro { text-align:center; margin-left:auto; margin-right:auto; }
+  .vc .hero-intro .sub { margin-left:auto; margin-right:auto; }
   .vc .stats { display:grid; grid-template-columns:repeat(3,1fr); gap:16px 10px; width:100%; margin-top:22px; }
   .vc .stat-n { font-size:19px; }
-  .vc .drop { padding:22px 16px 18px; border-radius:18px; }
   .vc .btn { padding:15px 16px; min-height:48px; }
   .vc .payout .big { font-size:38px; }
   .vc .card { padding:16px; }
   .vc .chip { padding:10px 14px; min-height:44px; }
   .vc .field-edit input { max-width:none; }
   .vc .field-val { flex-wrap:wrap; }
+  .vc .hero-agent .agent-panel { min-height:480px; border-radius:16px; }
+  .vc .hero-agent .agent-frame, .vc .hero-agent .agent-frame iframe { min-height:440px; }
 }
 .vc .side { position:sticky; top:86px; }
 @media (max-width:900px){ .vc .side { position:static; } }
@@ -134,11 +142,11 @@ const CSS = `
 .vc .btn.line { background:#fff; border:1px solid var(--line); color:var(--ink); width:100%; margin-top:10px; text-align:center; }
 .vc .btn.sample { justify-content:center; }
 .vc .btn:active { transform:translateY(1px); }
-.vc .linkbtn { background:none; border:0; font-family:'IBM Plex Mono',monospace; font-size:11px;
+.vc .linkbtn { background:none; border:0; font-family:'JetBrains Mono',monospace; font-size:11px;
   letter-spacing:.09em; text-transform:uppercase; color:var(--agent); cursor:pointer; padding:14px 0 0; width:100%; }
 
 /* ---------- receipt ---------- */
-.vc .receipt { background:#fff; border-radius:10px; padding:18px 16px; font-family:'IBM Plex Mono',monospace;
+.vc .receipt { background:#fff; border-radius:10px; padding:18px 16px; font-family:'JetBrains Mono',monospace;
   font-size:11px; line-height:1.7; color:#2A3640; position:relative; box-shadow:0 6px 24px rgba(16,24,32,.10); }
 .vc .receipt .hr { border-top:1px dashed #C9D2D1; margin:9px 0; }
 .vc .receipt .rr { display:flex; justify-content:space-between; gap:10px; }
@@ -160,14 +168,14 @@ const CSS = `
 .vc .pipe li.live .dot { border-color:var(--agent); border-right-color:transparent; animation:spin .8s linear infinite; }
 @keyframes spin { to { transform:rotate(360deg) } }
 .vc .pipe small { display:block; font-weight:400; font-size:11.5px; color:var(--mute);
-  font-family:'IBM Plex Mono',monospace; margin-top:2px; }
+  font-family:'JetBrains Mono',monospace; margin-top:2px; }
 
 /* ---------- focus pull (signature) ---------- */
 .vc .resolve { animation:focuspull .55s cubic-bezier(.2,.7,.3,1) both; }
 @keyframes focuspull { from{ filter:blur(7px); opacity:0; letter-spacing:.06em } to{ filter:blur(0); opacity:1; letter-spacing:normal } }
 
 /* ---------- pills ---------- */
-.vc .pill { display:inline-flex; align-items:center; gap:5px; font-family:'IBM Plex Mono',monospace;
+.vc .pill { display:inline-flex; align-items:center; gap:5px; font-family:'JetBrains Mono',monospace;
   font-size:10px; letter-spacing:.09em; text-transform:uppercase; padding:4px 8px; border-radius:6px; white-space:nowrap; }
 .vc .pill.ok { background:var(--lens-soft); color:var(--lens); }
 .vc .pill.need { background:var(--amber-soft); color:var(--amber); }
@@ -208,12 +216,12 @@ const CSS = `
 /* ---------- money ---------- */
 .vc .line { display:flex; justify-content:space-between; gap:12px; padding:11px 0; border-bottom:1px solid #EDF1F0; font-size:14px; }
 .vc .line:last-child { border-bottom:0; }
-.vc .line .amt { font-family:'IBM Plex Mono',monospace; font-variant-numeric:tabular-nums; font-weight:500; }
+.vc .line .amt { font-family:'JetBrains Mono',monospace; font-variant-numeric:tabular-nums; font-weight:500; }
 .vc .line.excl > span:first-child { color:var(--mute); }
 .vc .line.excl .amt { color:var(--mute); text-decoration:line-through; }
 .vc .payout { background:var(--ink); color:#fff; border-radius:var(--r); padding:22px; }
-.vc .payout .big { font-family:'Bricolage Grotesque',sans-serif; font-weight:800; font-size:46px;
-  letter-spacing:-.04em; font-variant-numeric:tabular-nums; line-height:1; margin-top:6px; }
+.vc .payout .big { font-family:'Inter',sans-serif; font-weight:800; font-size:46px;
+  letter-spacing:-.03em; font-variant-numeric:tabular-nums; line-height:1; margin-top:6px; }
 .vc .payout .k { color:#93A5A2; }
 .vc .bar2 { height:5px; border-radius:3px; background:#E4EAE9; overflow:hidden; margin-top:10px; }
 .vc .bar2 i { display:block; height:100%; background:var(--lens); border-radius:3px; }
@@ -227,7 +235,7 @@ const CSS = `
 .vc .track .node { width:17px; height:17px; border-radius:50%; background:#fff; border:2px solid #D4DCDB; flex:0 0 auto; z-index:1; }
 .vc .track li.on .node { border-color:var(--lens); background:var(--lens); }
 .vc .track .t { font-size:14px; font-weight:600; }
-.vc .track .d { font-size:12px; color:var(--mute); font-family:'IBM Plex Mono',monospace; }
+.vc .track .d { font-size:12px; color:var(--mute); font-family:'JetBrains Mono',monospace; }
 .vc .track li:not(.on) .t { color:var(--mute); font-weight:500; }
 
 .vc .nudge { background:linear-gradient(140deg,#15343A,#0E7A6E); color:#fff; border-radius:var(--r); padding:22px; }
@@ -235,7 +243,7 @@ const CSS = `
 .vc .nudge p { font-size:14px; line-height:1.55; color:#C7E3DD; margin:10px 0 0; }
 .vc .nudge button { margin-top:16px; width:100%; background:#fff; color:#0E4E48; border:0;
   border-radius:12px; padding:13px; font-family:inherit; font-weight:700; font-size:14.5px; cursor:pointer; }
-.vc .save { font-family:'IBM Plex Mono',monospace; font-size:11px; color:#8FCFC3; letter-spacing:.08em; }
+.vc .save { font-family:'JetBrains Mono',monospace; font-size:11px; color:#8FCFC3; letter-spacing:.08em; }
 
 .vc .claims { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:14px; margin-top:14px; }
 .vc .foot { text-align:center; color:var(--mute); font-size:12.5px; padding:34px 0 0; }
@@ -356,11 +364,9 @@ export default function VisionClaimCopilot() {
   const [screen, setScreen] = useState("home");
   const [photo, setPhoto] = useState(null);
   const [step, setStep] = useState(0);
-  const [drag, setDrag] = useState(false);
   const [elapsed, setElapsed] = useState(null);
   const [claimDetails, setClaimDetails] = useState(DEFAULT_CLAIM);
   const startedAt = useRef(null);
-  const fileRef = useRef(null);
 
   const go = useCallback(() => {
     startedAt.current = Date.now();
@@ -368,19 +374,6 @@ export default function VisionClaimCopilot() {
     setScreen("scan");
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
-
-  const pick = useCallback((f) => { setPhoto(URL.createObjectURL(f)); go(); }, [go]);
-
-  /* paste a screenshot straight into the page */
-  useEffect(() => {
-    if (screen !== "home") return;
-    const onPaste = (e) => {
-      const item = [...(e.clipboardData?.items || [])].find((i) => i.type.startsWith("image/"));
-      if (item) pick(item.getAsFile());
-    };
-    window.addEventListener("paste", onPaste);
-    return () => window.removeEventListener("paste", onPaste);
-  }, [screen, pick]);
 
   /* agent pipeline */
   useEffect(() => {
@@ -430,7 +423,7 @@ export default function VisionClaimCopilot() {
             Vision Claim Copilot
           </div>
           <ol className="stepper">
-            {["Capture", "Confirm", "Submit"].map((s, i) => (
+            {["Scan", "Confirm", "Submit"].map((s, i) => (
               <li key={s} className={i === idx ? "on" : i < idx ? "past" : ""}>
                 <span className="n">{i < idx ? "✓" : i + 1}</span>
                 {s}
@@ -450,10 +443,7 @@ export default function VisionClaimCopilot() {
 
       <main className="wrap page">
         {screen === "home" && (
-          <Home
-            drag={drag} setDrag={setDrag} onSample={go} fileRef={fileRef}
-            onBrowse={() => fileRef.current?.click()} onPicked={pick}
-          />
+          <Home onSample={go} />
         )}
         {screen === "scan" && <Scan photo={photo} step={step} onSkip={startReview} />}
         {screen === "review" && (
@@ -474,20 +464,20 @@ export default function VisionClaimCopilot() {
 }
 
 /* ---------------- screens ---------------- */
-function Home({ drag, setDrag, onSample, onBrowse, onPicked, fileRef }) {
+function Home({ onSample }) {
   return (
     <>
       <section className="hero">
-        <div className="hero-copy">
+        <div className="hero-intro">
           <span className="eyebrow">Out-of-network claim</span>
           <h1 style={{ marginTop: 12 }}>
-            Don't fill out
+            Drop your receipt.
             <br />
-            the form.
+            I'll file the claim.
           </h1>
           <p className="sub">
-            Drop in the receipt from your visit. I'll read it, pull out everything your plan needs,
-            ask about anything I can't make out, and file the claim for you.
+            Upload a photo of your receipt below. The copilot reads it, asks about anything
+            that's missing, and submits your claim — no forms to fill out.
           </p>
           <div className="stats">
             {[["~50s", "average to file"], ["0", "fields to type"], ["5–7 days", "to reimbursement"]].map(
@@ -501,38 +491,8 @@ function Home({ drag, setDrag, onSample, onBrowse, onPicked, fileRef }) {
           </div>
         </div>
 
-        <div
-          className={"drop" + (drag ? " over" : "")}
-          onDragOver={(e) => { e.preventDefault(); setDrag(true); }}
-          onDragLeave={() => setDrag(false)}
-          onDrop={(e) => {
-            e.preventDefault(); setDrag(false);
-            const f = e.dataTransfer.files?.[0];
-            if (f) onPicked(f);
-          }}
-        >
-          <div className="brackets"><i /><i /><i /><i /></div>
-          <div style={{ textAlign: "center", marginBottom: 20 }}>
-            <div className="mono" style={{ fontSize: 11, color: "var(--mute)", letterSpacing: ".14em" }}>
-              RECEIPT · INVOICE · EOB
-            </div>
-            <div style={{ fontSize: 15, color: "var(--slate)", marginTop: 8 }}>
-              {drag ? "Let go — I've got it." : "Drag a file here, paste a screenshot, or:"}
-            </div>
-          </div>
-          <input
-            ref={fileRef} type="file" accept="image/*,application/pdf"
-            style={{ display: "none" }}
-            onChange={(e) => e.target.files?.[0] && onPicked(e.target.files[0])}
-          />
-          <button className="btn primary" onClick={onBrowse}>
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M4 8h3l1.5-2.5h7L17 8h3v11H4z" /><circle cx="12" cy="13" r="3.4" />
-            </svg>
-            Take a photo or choose a file
-          </button>
-          <button className="btn line sample" onClick={onSample}>Use the sample receipt</button>
-          <button className="linkbtn" onClick={onSample}>▸ Skip to the demo</button>
+        <div className="hero-agent">
+          <UiPathCopilot src={UIPATH_AGENT_URL} hero />
         </div>
       </section>
 
@@ -565,6 +525,9 @@ function Home({ drag, setDrag, onSample, onBrowse, onPicked, fileRef }) {
             <div className="k mono" style={{ marginTop: 8 }}>Deposited Jul 8 · {money(60)}</div>
           </div>
         </div>
+        <button className="linkbtn" style={{ textAlign: "center", marginTop: 20 }} onClick={onSample}>
+          ▸ Try the demo flow without the agent
+        </button>
       </section>
     </>
   );
@@ -606,11 +569,11 @@ function Scan({ photo, step, onSkip }) {
   );
 }
 
-function UiPathCopilot({ src }) {
+function UiPathCopilot({ src, hero }) {
   return (
-    <div className="panel agent-panel">
+    <div className={"panel agent-panel" + (hero ? " hero-panel" : "")}>
       <div className="ph">
-        <h3>Copilot</h3>
+        <h3>{hero ? "Claim Copilot" : "Copilot"}</h3>
         <span className="pill ai">UiPath agent</span>
       </div>
       <div className="agent-frame">
@@ -687,11 +650,12 @@ function Review({ claimDetails, onUpdateClaimDetail, onSubmit }) {
       </div>
 
       <aside className="side">
-        <UiPathCopilot src={UIPATH_AGENT_URL} />
-
-        <button className="btn go" style={{ marginTop: 14 }} onClick={onSubmit}>
+        <button className="btn go" onClick={onSubmit}>
           {`Send claim · get ${money(PAYOUT)} back`}
         </button>
+        <p className="k" style={{ marginTop: 12, textAlign: "center", lineHeight: 1.5 }}>
+          Review the details above, then submit when you're ready.
+        </p>
       </aside>
     </div>
   );
